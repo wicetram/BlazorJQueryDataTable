@@ -1,0 +1,39 @@
+﻿@inject IJSRuntime JSRuntime;
+
+@if (ChildContent is not null)
+{
+    <div id="@Id">
+        @ChildContent
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string Id { get; set; } = "hidden-table-info-" + Guid.NewGuid().ToString();
+
+
+    protected override void OnParametersSet()
+    {
+        StateHasChanged();
+        base.OnParametersSet();
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await JSRuntime.InvokeAsync<string>("AddDataTable", new object[] { "#" + Id + " table" });
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //     if (firstRender)
+    //     {
+    //         var jQuery = await JSRuntime.InvokeAsync<IJSObjectReference>("$", "table");
+    //         await jQuery.InvokeVoidAsync("DataTable");
+    //     }
+    //}
+}
